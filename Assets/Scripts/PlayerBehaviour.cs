@@ -1,21 +1,15 @@
-using UnityEditor.Rendering;
+using UnityEngine.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-
     public int Respawn = 0;
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void FixedUpdate()
     {
         HandlePlayerDontStop();
+
         if (GameManager.gameManager.playerHealth.Health <= 0)
         {
             LoadMenu();
@@ -24,6 +18,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             LoadMenu();
         }
+
         HandleFood();
     }
     private void HandlePlayerDontStop()
@@ -32,7 +27,7 @@ public class PlayerBehaviour : MonoBehaviour
         {
             if (!isPlayerMoving())
             {
-                SceneManager.LoadScene(Respawn);
+                LoadMenu();
             }
         }
     }

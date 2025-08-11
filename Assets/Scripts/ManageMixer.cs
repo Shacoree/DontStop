@@ -4,11 +4,12 @@ using UnityEngine.Audio;
 public class ManageMixer : MonoBehaviour 
 {
     [SerializeField] public AudioMixer mainAudioMixer;
+
+    public static ManageMixer audioManager { get; private set; }
+
     private string audioMixerMaster = "audioMixerMasterVolume";
     private string audioMixerMusic = "audioMixerMusicVolume";
     private string audioMixerSFX = "audioMixerSFXVolume";
-
-    public static ManageMixer audioManager { get; private set; }
 
     private void Awake()
     {

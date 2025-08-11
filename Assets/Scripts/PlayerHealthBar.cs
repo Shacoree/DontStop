@@ -5,17 +5,16 @@ public class PlayerHealthBar : MonoBehaviour
 {
     [SerializeField] public Slider healthSlider;
     [SerializeField] public Slider easeHealthSlider;
+
     private float maxHealth;
     private float health;
+
     private float lerpSpeed = 0.05f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         maxHealth = GameManager.gameManager.playerHealth.MaxHealth;
-        //Invoke(nameof(GetPlayerMaxHealth), 1.0f);
     }
-
-    // Update is called once per frame
     void Update()
     {
         health = GameManager.gameManager.playerHealth.Health;

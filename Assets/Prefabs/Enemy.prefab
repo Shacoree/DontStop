@@ -6560,18 +6560,13 @@ MonoBehaviour:
   axeHit: {fileID: 8300000, guid: 213d674fa554e914b8dcd37020aae6a6, type: 3}
   groundSmashAudio: {fileID: 0}
   audioSourceSFX: {fileID: 0}
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 0
-  whatIsPlayer:
-    serializedVersion: 2
-    m_Bits: 0
   enemyDamage: 20
   timeBetweenAttacks: 1
   alreadyAttacked: 0
   damageDelay: 0.5
-  animationDelay: 0
+  animationDelay: 0.5
   attackRange: 2
+  damageRange: 2
   giveRageOnKill: 10
   giveHealthOnKill: 5
 --- !u!54 &2721007037399566402

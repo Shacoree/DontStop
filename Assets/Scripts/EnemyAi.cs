@@ -10,18 +10,34 @@ using static UnityEngine.Rendering.DebugUI;
 public class EnemyAi : MonoBehaviour
 {
     [SerializeField] public GameObject bloodEffect;
-    public UnitHealth enemyHealth = new UnitHealth(30, 30);
+    protected Transform player;
+    protected NavMeshAgent enemy;
+    protected Animator enemyAnimator;
 
     [SerializeField] protected AudioClip axeHit;
     [SerializeField] public AudioClip groundSmashAudio;
     public AudioSource audioSourceSFX;
 
-    protected Transform player;
-    protected NavMeshAgent enemy;
-    protected Animator enemyAnimator;
+    public UnitHealth enemyHealth = new UnitHealth(30, 30);
+
+    protected IObjectPool<EnemyAi> enemyPool;
 
     protected bool isDead;
     protected bool hasStartedJump;
+
+    [Header("Attacking")]
+    public float enemyDamage = 20;
+    public float timeBetweenAttacks;
+    public bool alreadyAttacked;
+    public float damageDelay;
+    public float animationDelay;
+    public float attackRange;
+    public float damageRange;
+
+    [Header("PlayerVariables")]
+    public float giveRageOnKill = 10.0f;
+    public float giveHealthOnKill = 5.0f;
+
     public bool IsDead
     {
         get { return isDead; }
@@ -33,27 +49,6 @@ public class EnemyAi : MonoBehaviour
         set { hasStartedJump = value; }
     }
 
-    public LayerMask whatIsGround, whatIsPlayer;
-
-    [Header("Attacking")]
-    public float enemyDamage = 20;
-    public float timeBetweenAttacks;
-    public bool alreadyAttacked;
-    public float damageDelay;
-    public float animationDelay;
-
-    //States
-    public float attackRange;
-
-    [Header("PlayerVariables")]
-    public float giveRageOnKill = 15.0f;
-    public float giveHealthOnKill = 5.0f;
-
-    protected IObjectPool<EnemyAi> enemyPool;
-
-    
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected void Awake()
     {
         player = GameObject.Find("Player").transform;
@@ -64,45 +59,44 @@ public class EnemyAi : MonoBehaviour
         hasStartedJump = false;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    protected void FixedUpdate()
     {
-        if (ISPlayerInAttackRange() && !isDead) Invoke(nameof(AttackPlayer), damageDelay);
+        if (ISPlayerInAttackRange(attackRange) && !isDead) Invoke(nameof(AttackPlayer), damageDelay);
         else if (alreadyAttacked == false && !isDead) FollowPlayer();
 
         HandleJumping();
     }
-    public bool ISPlayerInAttackRange()
+    public bool ISPlayerInAttackRange(float range)
     {
-        if (transform.position.x - player.position.x < attackRange && transform.position.x - player.position.x > -attackRange && transform.position.z - player.position.z < attackRange && transform.position.z - player.position.z > -attackRange && transform.position.y - player.position.y < attackRange && transform.position.y - player.position.y > -attackRange && Physics.Linecast((transform.position + new Vector3(0, 1.8f, 0)), (player.position + new Vector3(0, 1.8f, 0))))
+        if (transform.position.x - player.position.x < range && transform.position.x - player.position.x > -range && transform.position.z - player.position.z < range && transform.position.z - player.position.z > -range && transform.position.y - player.position.y < range && transform.position.y - player.position.y > -range && Physics.Linecast((transform.position + new Vector3(0, 1.8f, 0)), (player.position + new Vector3(0, 1.8f, 0))))
             return true;
         else return false;
     }
-    private void FollowPlayer()
+    protected void FollowPlayer()
     {
         if (enemy == null || !enemy.isActiveAndEnabled) return;
+
         enemy.SetDestination(player.position);
-        //transform.LookAt(new Vector3(player.position.x, 0.0f, player.position.z));
-        //transform.LookAt(player, Vector3.up);
     }
     private void AttackPlayer()
     {
-        if (enemy == null || !enemy.isActiveAndEnabled) return;
-        if (!ISPlayerInAttackRange()) return;
+        if (enemy == null || !enemy.isActiveAndEnabled || isDead) return;
+        if (!ISPlayerInAttackRange(attackRange)) return;
 
         enemy.SetDestination(transform.position);
 
         if (!alreadyAttacked)
         {
+            alreadyAttacked = true;
+            
             enemyAnimator.SetTrigger("Attack");
             transform.LookAt(new Vector3(player.position.x, 0.0f, player.position.z));
 
-
-            alreadyAttacked = true;
-            Invoke(nameof(ResetAttack), timeBetweenAttacks);
+            
+            Invoke(nameof(ResetAttack), timeBetweenAttacks + animationDelay);
         }
     }
-    private void ResetAttack()
+    protected void ResetAttack()
     {
         alreadyAttacked = false;
     }
@@ -117,9 +111,12 @@ public class EnemyAi : MonoBehaviour
     public void OnTakeDamage(float damage)
     {
         if (isDead) return;
+
         enemyHealth.TakeDamage(damage);
+
         ToggleParticle(true);
         Invoke(nameof(DisableParticle), 0.6f);
+
         audioSourceSFX = GameObject.Find("AudioSourceSFX").GetComponent<AudioSource>();
         audioSourceSFX.clip = axeHit;
         audioSourceSFX.transform.position = player.position;
@@ -128,14 +125,16 @@ public class EnemyAi : MonoBehaviour
         if (enemyHealth.Health <= 0.0f)
         {
             isDead = true;
+
             GameManager.gameManager.playerHealth.Heal(giveHealthOnKill);
             GameManager.gameManager.playerRage.GiveRage(giveRageOnKill);
-            enemy.SetDestination(transform.position);
 
+            enemy.SetDestination(transform.position);
             
             enemyAnimator.SetTrigger("Dead");
             GameManager.gameManager.playerKills++;
 
+            //no body block while dead
             GetComponent<CapsuleCollider>().enabled = false;
             Invoke(nameof(ReleaseEnemy), 3.0f);
         }
@@ -143,7 +142,6 @@ public class EnemyAi : MonoBehaviour
     protected void ReleaseEnemy()
     {
         enemyPool.Release(this);
-
     }
     public void SetPool(IObjectPool<EnemyAi> pool)
     {
@@ -173,4 +171,14 @@ public class EnemyAi : MonoBehaviour
         enemy.autoTraverseOffMeshLink = true;
     }
 
+    //Make pathfinding not run every fixedUpdate to increase performance when many enemies
+    /*IEnumerator UpdatePathRoutine()
+    {
+        while (true)
+        {
+            if (isDead || alreadyAttacked) break;
+            enemy.SetDestination(player.position);
+            yield return new WaitForSeconds(UnityEngine.Random.Range(0.25f, 0.5f));
+        }
+    }*/
 }

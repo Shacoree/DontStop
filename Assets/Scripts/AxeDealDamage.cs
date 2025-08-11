@@ -5,17 +5,11 @@ public class AxeDealDamage : MonoBehaviour
 {
     private Collider weaponCollider;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         weaponCollider = GetComponent<BoxCollider>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     private void OnTriggerEnter(Collider other)
     {
         if (other == null || other.IsDestroyed()) return;

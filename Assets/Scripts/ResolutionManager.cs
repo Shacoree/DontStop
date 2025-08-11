@@ -4,6 +4,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System;
+using UnityEngine.UI;
 
 public class ResolutionManager : MonoBehaviour
 {
@@ -12,11 +13,10 @@ public class ResolutionManager : MonoBehaviour
 
     private Resolution[] resolutions;
     private List<Resolution> filteredResolutions;
-
-
     private RefreshRate currentRefreshRate;
+
     private int currentResolutionIndex = 0;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         resolutions = Screen.resolutions;
@@ -47,12 +47,6 @@ public class ResolutionManager : MonoBehaviour
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     public void SetResolution(int resolutionIndex)

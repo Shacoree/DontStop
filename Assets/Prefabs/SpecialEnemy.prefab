@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3260072a1edd649abc0f71ccd9ea79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  audioSourceSFX: {fileID: 0}
 --- !u!54 &3444936692968378127
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -236,18 +237,14 @@ MonoBehaviour:
   bloodEffect: {fileID: 2423142295596278103}
   axeHit: {fileID: 8300000, guid: 213d674fa554e914b8dcd37020aae6a6, type: 3}
   groundSmashAudio: {fileID: 8300000, guid: bcaaa664eff11d946b41e03c9664aeac, type: 3}
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 0
-  whatIsPlayer:
-    serializedVersion: 2
-    m_Bits: 0
+  audioSourceSFX: {fileID: 0}
   enemyDamage: 50
   timeBetweenAttacks: 2
   alreadyAttacked: 0
   damageDelay: 0.5
   animationDelay: 0
   attackRange: 3
+  damageRange: 5
   giveRageOnKill: 50
   giveHealthOnKill: 20
 --- !u!136 &1992079056312772691

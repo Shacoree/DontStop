@@ -63,7 +63,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: 6e45470d3e2cfbc4db5ea13910705f12, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: 81f3357891238cd4ba9793077a994853, type: 2}
+      objectReference: {fileID: 2100000, guid: 611ef93e1ac6dd043b64983cd0d4bd47, type: 2}
     - target: {fileID: 919132149155446097, guid: 6e45470d3e2cfbc4db5ea13910705f12, type: 3}
       propertyPath: m_Name
       value: Food
@@ -74,7 +74,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6e45470d3e2cfbc4db5ea13910705f12, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6858570420317921125}
+      addedObject: {fileID: 5323060177518568655}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6e45470d3e2cfbc4db5ea13910705f12, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3576217937500717983}
@@ -84,8 +84,8 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 6e45470d3e2cfbc4db5ea13910705f12, type: 3}
   m_PrefabInstance: {fileID: 1716434719329932256}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &6858570420317921125
-BoxCollider:
+--- !u!135 &5323060177518568655
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -103,7 +103,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.112573035, y: 0.21000001, z: 0.11040335}
+  m_Radius: 0.105000004
   m_Center: {x: -0.00021823496, y: 0.104093045, z: 0.00040204823}
 --- !u!114 &3576217937500717983
 MonoBehaviour:

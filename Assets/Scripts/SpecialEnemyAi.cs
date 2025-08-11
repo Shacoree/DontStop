@@ -11,8 +11,6 @@ public class SpecialEnemyAi : EnemyAi
 {
     new private IObjectPool<SpecialEnemyAi> enemyPool;
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     new void Awake()
     {
         //parameters override

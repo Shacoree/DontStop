@@ -11,8 +11,6 @@ public class PlayerActions : MonoBehaviour
     [SerializeField]
     private InputActionReference movement, pointerPosition, jump, attack, menu;
 
-    
-
     private CharacterController playerController;
     private Camera playerCamera;
     private Transform playerTransform;
@@ -20,33 +18,19 @@ public class PlayerActions : MonoBehaviour
 
     public static bool lowFood = false;
     public static bool highFood = false;
-
-    private Vector2 lastMousePos;
-    private float rotationX, rotationY;
-
     private static bool playerStartedMoving;
+    public static bool isBeingHooked = false;
 
-    public static bool PlayerStartedMoving
-    {
-        get { return playerStartedMoving; }
-        set { playerStartedMoving = value; }
-    }
+    private float rotationX, rotationY;
 
     //Attack
     private float attackCooldownTimer = 1.0f;
     private float attackCooldown = 1.0f;
-
-
-    private static Vector3 playerVelocity;
-    private float playerSensitivity;
-
     public static float playerDamage = 30.0f;
 
-    public static Vector3 PlayerVelocity
-    {
-        get { return playerVelocity; }
-        set { playerVelocity = value; }
-    }
+    private static Vector3 playerVelocity;
+
+    private float playerSensitivity;
 
     [Header("Physics")]
     public float gravity = 9.81f;
@@ -58,9 +42,17 @@ public class PlayerActions : MonoBehaviour
     public float groundDeceleration = 3.0f;
     public float friction = 5.0f;
     public float airDeceleration = 2.0f;
+    public static Vector3 PlayerVelocity
+    {
+        get { return playerVelocity; }
+        set { playerVelocity = value; }
+    }
+    public static bool PlayerStartedMoving
+    {
+        get { return playerStartedMoving; }
+        set { playerStartedMoving = value; }
+    }
 
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
@@ -69,32 +61,29 @@ public class PlayerActions : MonoBehaviour
         playerTransform = GetComponent<Transform>();
         playerAnimator = GetComponentInChildren<Animator>();
 
-        lastMousePos = pointerPosition.action.ReadValue<Vector2>();
-
         playerStartedMoving = false;
         lowFood = false;
         highFood = false;
 
-        playerVelocity = Vector3.zero;
-
-        playerSensitivity = PlayerPrefs.GetFloat(SettingsMenu.prefsSensitivity);
-
         rotationX = 0.0f;
         rotationY = 0.0f;
+
+        LoadSettings();
+
+        playerVelocity = Vector3.zero;
     }
 
-    // Update is called once per frame
     void Update()
     {
         HandlePlayerCamera();
     }
+
     void FixedUpdate()
     {
         HandleAttack();
         HandlePlayerMovement();
         HandleMenuOpen();
     }
-    
 
     private void HandleAttack()
     {
@@ -135,6 +124,8 @@ public class PlayerActions : MonoBehaviour
     {
         float deltaTime = Time.fixedDeltaTime;
 
+        if (isBeingHooked) return;
+
         // Get movInput
         Vector2 movementInput = movement.action.ReadValue<Vector2>();
 
@@ -158,8 +149,6 @@ public class PlayerActions : MonoBehaviour
         {
             playerVelocity.y = jumpImpulse;
         }
-
-
 
         // Apply friction
         if (playerController.isGrounded)
@@ -195,8 +184,6 @@ public class PlayerActions : MonoBehaviour
         playerController.Move(playerVelocity * deltaTime);
     }
 
-
-
     Vector3 Accelerate(Vector3 vel, Vector3 wishdir, float wishspeed, float accel, float dt)
     {
         float curspeed = Vector3.Dot(vel, wishdir);
@@ -214,7 +201,6 @@ public class PlayerActions : MonoBehaviour
     {
         return pointerPosition.action.ReadValue<Vector2>();
     }
-
     private void HandleMenuOpen()
     {
         menu.action.performed += MenuOpen;
@@ -225,5 +211,33 @@ public class PlayerActions : MonoBehaviour
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
     }
-    
+    private void LoadSettings()
+    {
+        if (!PlayerPrefs.HasKey(SettingsMenu.prefsMasterVolume))
+        {
+            PlayerPrefs.SetFloat(SettingsMenu.prefsMasterVolume, 1);
+        }
+        if (!PlayerPrefs.HasKey(SettingsMenu.prefsMusicVolume))
+        {
+            PlayerPrefs.SetFloat(SettingsMenu.prefsMusicVolume, 1);
+        }
+        if (!PlayerPrefs.HasKey(SettingsMenu.prefsSFXVolume))
+        {
+            PlayerPrefs.SetFloat(SettingsMenu.prefsSFXVolume, 1);
+        }
+        if (!PlayerPrefs.HasKey(SettingsMenu.prefsSensitivity))
+        {
+            PlayerPrefs.SetFloat(SettingsMenu.prefsSensitivity, 1);
+        }
+        if (!PlayerPrefs.HasKey(SettingsMenu.prefsFOV))
+        {
+            PlayerPrefs.SetFloat(SettingsMenu.prefsFOV, 90);
+        }
+
+        ManageMixer.audioManager.SetMasterVolume(PlayerPrefs.GetFloat(SettingsMenu.prefsMasterVolume));
+        ManageMixer.audioManager.SetMusicVolume(PlayerPrefs.GetFloat(SettingsMenu.prefsMusicVolume));
+        ManageMixer.audioManager.SetSFXVolume(PlayerPrefs.GetFloat(SettingsMenu.prefsSFXVolume));
+        playerSensitivity = PlayerPrefs.GetFloat(SettingsMenu.prefsSensitivity);
+        playerCamera.fieldOfView = PlayerPrefs.GetFloat(SettingsMenu.prefsFOV);
+    }
 }

@@ -4,17 +4,7 @@ using UnityEngine;
 public class DamagePlayer : MonoBehaviour
 {
     [SerializeField] public AudioSource audioSourceSFX;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     private void EnemyDealDamageToPlayer()
     {
         var enemy = this.GameObject().GetComponent<EnemyAi>();
@@ -27,7 +17,7 @@ public class DamagePlayer : MonoBehaviour
             audioSourceSFX.Play();
         }
 
-        if (!enemy.ISPlayerInAttackRange()) return;
+        if (!enemy.ISPlayerInAttackRange(enemy.damageRange)) return;
         
         GameManager.gameManager.playerHealth.TakeDamage(enemy.enemyDamage);
     }
